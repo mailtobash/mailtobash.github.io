@@ -4,299 +4,536 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Basheer Sheriff — Solutions Architect & Principal Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0d1117;
-      --surface:   #161b22;
-      --surface2:  #1c2330;
-      --border:    #30363d;
-      --accent:    #f90;        /* AWS orange */
-      --accent2:   #58a6ff;     /* link blue */
-      --text:      #e6edf3;
-      --muted:     #8b949e;
-      --radius:    10px;
+      --bg:        #080c14;
+      --surface:   #0f1724;
+      --surface2:  #162035;
+      --border:    rgba(255,255,255,.07);
+      --border-h:  rgba(255,153,0,.4);
+      --accent:    #ff9900;
+      --accent-d:  #e68a00;
+      --blue:      #4facfe;
+      --text:      #e8edf5;
+      --muted:     #7a8799;
+      --radius:    14px;
+      --radius-sm: 8px;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.65;
       font-size: 16px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── NAV ──────────────────────────────────────────── */
+    /* ── NOISE TEXTURE OVERLAY ──────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .4;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────── */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(13,17,23,.92);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      height: 56px;
+      padding: 0 2.5rem;
+      height: 60px;
+      background: rgba(8,12,20,.8);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      transition: background .3s;
     }
-    nav .logo { font-weight: 700; font-size: 1rem; color: var(--accent); letter-spacing: .04em; }
-    nav ul { list-style: none; display: flex; gap: 1.5rem; }
-    nav ul a { color: var(--muted); text-decoration: none; font-size: .88rem; transition: color .2s; }
+    .nav-logo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -.01em;
+    }
+    .nav-logo span { color: var(--accent); }
+    nav ul { list-style: none; display: flex; gap: 2rem; }
+    nav ul a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 500;
+      letter-spacing: .02em;
+      transition: color .2s;
+      position: relative;
+    }
+    nav ul a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transform: scaleX(0);
+      transition: transform .2s;
+    }
     nav ul a:hover { color: var(--text); }
+    nav ul a:hover::after { transform: scaleX(1); }
 
-    /* ── HERO ─────────────────────────────────────────── */
+    /* ── HERO ────────────────────────────────────────────── */
     .hero {
-      min-height: 92vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 4rem 2rem;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,153,0,.12) 0%, transparent 70%);
+      padding: 7rem 2rem 5rem;
+      position: relative;
+      overflow: hidden;
     }
-    .hero-badge {
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% -10%, rgba(255,153,0,.15) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(79,172,254,.08) 0%, transparent 50%);
+    }
+    /* Dot grid */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-pill {
       display: inline-flex;
       align-items: center;
       gap: .5rem;
-      background: rgba(255,153,0,.12);
-      border: 1px solid rgba(255,153,0,.3);
+      background: rgba(255,153,0,.08);
+      border: 1px solid rgba(255,153,0,.25);
       color: var(--accent);
       border-radius: 999px;
-      padding: .3rem 1rem;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      letter-spacing: .06em;
+      padding: .4rem 1.1rem;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
       text-transform: uppercase;
+      margin-bottom: 1.75rem;
     }
+    .hero-pill::before { content: '●'; font-size: .5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
     .hero h1 {
-      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5rem);
       font-weight: 800;
-      letter-spacing: -.02em;
-      line-height: 1.1;
-      margin-bottom: .75rem;
+      letter-spacing: -.03em;
+      line-height: 1.05;
+      margin-bottom: 1rem;
     }
-    .hero h1 span { color: var(--accent); }
-    .hero .tagline {
-      font-size: clamp(.95rem, 2vw, 1.15rem);
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent) 0%, #ffcc44 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem);
       color: var(--muted);
-      max-width: 640px;
-      margin-bottom: 2rem;
+      max-width: 580px;
+      margin: 0 auto 2rem;
+      font-weight: 400;
+      line-height: 1.7;
     }
-    .hero-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: .45rem;
-      padding: .65rem 1.4rem;
-      border-radius: var(--radius);
+      gap: .5rem;
+      padding: .72rem 1.5rem;
+      border-radius: var(--radius-sm);
       font-size: .9rem;
       font-weight: 600;
       text-decoration: none;
-      transition: opacity .2s, transform .15s;
+      transition: all .2s;
+      letter-spacing: .01em;
     }
-    .btn:hover { opacity: .85; transform: translateY(-1px); }
-    .btn-primary { background: var(--accent); color: #000; }
-    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .hero-stats {
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 3.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-d) 100%);
+      color: #000;
+      box-shadow: 0 4px 24px rgba(255,153,0,.3);
     }
-    .stat { text-align: center; }
-    .stat-number { font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
-    .stat-label { font-size: .8rem; color: var(--muted); margin-top: .25rem; }
-
-    /* ── SECTIONS ─────────────────────────────────────── */
-    section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
-    .section-label {
-      display: inline-block;
-      font-size: .75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      color: var(--accent);
-      margin-bottom: .75rem;
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(255,153,0,.4);
     }
-    h2 {
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      font-weight: 800;
-      margin-bottom: 2.5rem;
-      letter-spacing: -.01em;
-    }
-    .divider {
-      width: 48px;
-      height: 3px;
-      background: var(--accent);
-      border-radius: 2px;
-      margin: .75rem 0 2.5rem;
-    }
-
-    /* ── ACHIEVEMENTS ─────────────────────────────────── */
-    .achievements-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
-    }
-    .achievement-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      transition: border-color .2s, transform .2s;
-    }
-    .achievement-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-    .achievement-card .icon { font-size: 1.8rem; margin-bottom: .75rem; }
-    .achievement-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
-    .achievement-card p { font-size: .88rem; color: var(--muted); line-height: 1.6; }
-    .achievement-card .metric {
-      display: inline-block;
-      margin-top: .75rem;
-      background: rgba(255,153,0,.12);
-      color: var(--accent);
-      border-radius: 6px;
-      padding: .2rem .7rem;
-      font-size: .8rem;
-      font-weight: 700;
-    }
-
-    /* ── EXPERIENCE ───────────────────────────────────── */
-    .timeline { position: relative; padding-left: 2rem; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 6px;
-      bottom: 6px;
-      width: 2px;
-      background: var(--border);
-    }
-    .job {
-      position: relative;
-      margin-bottom: 2.5rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      transition: border-color .2s;
-    }
-    .job:hover { border-color: var(--accent); }
-    .job::before {
-      content: '';
-      position: absolute;
-      left: -2.5rem;
-      top: 1.4rem;
-      width: 12px;
-      height: 12px;
-      background: var(--accent);
-      border-radius: 50%;
-      border: 2px solid var(--bg);
-    }
-    .job-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .75rem; }
-    .job-title { font-size: 1.05rem; font-weight: 700; }
-    .job-company { color: var(--accent); font-weight: 600; }
-    .job-meta { font-size: .8rem; color: var(--muted); text-align: right; }
-    .job ul { margin-top: .75rem; padding-left: 1.2rem; }
-    .job li { font-size: .88rem; color: var(--muted); margin-bottom: .4rem; line-height: 1.6; }
-    .job li strong { color: var(--text); }
-
-    /* ── SKILLS ───────────────────────────────────────── */
-    .skills-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-    .skills-group {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-    }
-    .skills-group h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 1rem; }
-    .tags { display: flex; flex-wrap: wrap; gap: .5rem; }
-    .tag {
-      background: var(--surface2);
+    .btn-ghost {
+      background: rgba(255,255,255,.05);
       border: 1px solid var(--border);
       color: var(--text);
-      border-radius: 6px;
-      padding: .3rem .75rem;
-      font-size: .8rem;
-      font-weight: 500;
-      transition: border-color .2s;
     }
-    .tag:hover { border-color: var(--accent); }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.15);
+      transform: translateY(-2px);
+    }
 
-    /* ── CERTIFICATIONS ───────────────────────────────── */
-    .certs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
-    .cert-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
+    .hero-stats {
       display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      transition: border-color .2s;
+      gap: 3rem;
+      margin-top: 4rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
     }
-    .cert-card:hover { border-color: var(--accent); }
-    .cert-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: .1rem; }
-    .cert-name { font-size: .88rem; font-weight: 600; margin-bottom: .2rem; }
-    .cert-issuer { font-size: .78rem; color: var(--muted); }
-
-    /* ── EDUCATION ────────────────────────────────────── */
-    .edu-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1.25rem;
+    .hero-stats::before {
+      content: '';
+      position: absolute;
+      top: -1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 1.5rem;
+      background: linear-gradient(to bottom, transparent, var(--border));
     }
-    .edu-icon { font-size: 2rem; flex-shrink: 0; }
-    .edu-degree { font-size: 1.05rem; font-weight: 700; margin-bottom: .25rem; }
-    .edu-school { color: var(--accent); font-weight: 600; margin-bottom: .25rem; }
-    .edu-meta { font-size: .82rem; color: var(--muted); }
+    .stat { text-align: center; }
+    .stat-number {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent) 0%, #ffcc44 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .stat-label { font-size: .78rem; color: var(--muted); margin-top: .35rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
 
-    /* ── GITHUB SECTION ───────────────────────────────── */
-    .github-section {
+    /* ── LAYOUT ──────────────────────────────────────────── */
+    .section-wrap { max-width: 1080px; margin: 0 auto; padding: 5.5rem 2rem; }
+    .section-header { margin-bottom: 3rem; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--accent);
+      margin-bottom: .6rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -.025em;
+      line-height: 1.1;
+    }
+    h2 em { font-style: normal; color: var(--accent); }
+
+    /* ── ABOUT ───────────────────────────────────────────── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .about-text { font-size: 1.05rem; color: var(--muted); line-height: 1.85; }
+    .about-text strong { color: var(--text); }
+    .about-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 2rem;
+    }
+    .about-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+    .about-item:last-child { margin-bottom: 0; }
+    .about-item-icon {
+      width: 40px; height: 40px;
+      background: rgba(255,153,0,.1);
+      border: 1px solid rgba(255,153,0,.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .about-item-label { font-size: .75rem; color: var(--muted); font-weight: 500; margin-bottom: .15rem; }
+    .about-item-value { font-size: .92rem; font-weight: 600; }
+
+    /* ── ACHIEVEMENTS ────────────────────────────────────── */
+    .ach-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .ach-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+    }
+    .ach-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .ach-card:hover {
+      border-color: var(--border-h);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+    .ach-card:hover::before { opacity: 1; }
+    .ach-icon {
+      width: 48px; height: 48px;
+      background: rgba(255,153,0,.1);
+      border: 1px solid rgba(255,153,0,.2);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+    .ach-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .ach-card p { font-size: .88rem; color: var(--muted); line-height: 1.7; }
+    .ach-metric {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: 1rem;
+      background: rgba(255,153,0,.1);
+      border: 1px solid rgba(255,153,0,.2);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: .25rem .8rem;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    /* ── EXPERIENCE ──────────────────────────────────────── */
+    .timeline { position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 4px; bottom: 4px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+    .job {
+      position: relative;
+      padding-left: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    .job-dot {
+      position: absolute;
+      left: 8px;
+      top: 1.45rem;
+      width: 13px; height: 13px;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      transition: background .2s;
+    }
+    .job:hover .job-dot { background: var(--accent); }
+    .job-inner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .job:hover .job-inner {
+      border-color: var(--border-h);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .job-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: .5rem; margin-bottom: .9rem; }
+    .job-title { font-size: 1.05rem; font-weight: 700; }
+    .job-company {
+      font-size: .9rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent) 0%, #ffcc44 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: .15rem;
+    }
+    .job-meta {
+      font-size: .78rem;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.6;
+    }
+    .job-inner ul { padding-left: 1.1rem; }
+    .job-inner li {
+      font-size: .87rem;
+      color: var(--muted);
+      margin-bottom: .45rem;
+      line-height: 1.65;
+    }
+    .job-inner li::marker { color: var(--accent); }
+    .job-inner li strong { color: var(--text); }
+
+    /* ── SKILLS ──────────────────────────────────────────── */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+    .skill-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: border-color .2s;
+    }
+    .skill-group:hover { border-color: var(--border-h); }
+    .skill-group-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .skill-group-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: .45rem; }
+    .tag {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      padding: .3rem .8rem;
+      font-size: .78rem;
+      font-weight: 500;
+      transition: border-color .2s, color .2s;
+    }
+    .tag:hover { border-color: rgba(255,153,0,.4); color: var(--accent); }
+
+    /* ── CERTIFICATIONS ──────────────────────────────────── */
+    .certs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+    .cert-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .cert-card:hover { border-color: var(--border-h); transform: translateX(4px); }
+    .cert-icon-wrap {
+      width: 42px; height: 42px;
+      background: rgba(255,153,0,.08);
+      border: 1px solid rgba(255,153,0,.18);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .cert-name { font-size: .87rem; font-weight: 600; line-height: 1.35; margin-bottom: .2rem; }
+    .cert-issuer { font-size: .75rem; color: var(--muted); }
+
+    /* ── EDUCATION ───────────────────────────────────────── */
+    .edu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .edu-icon-wrap {
+      width: 64px; height: 64px;
+      background: rgba(255,153,0,.08);
+      border: 1px solid rgba(255,153,0,.18);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .edu-degree { font-size: 1.1rem; font-weight: 700; margin-bottom: .3rem; }
+    .edu-school { font-weight: 600; color: var(--accent); margin-bottom: .3rem; }
+    .edu-meta { font-size: .82rem; color: var(--muted); }
+
+    /* ── GITHUB ──────────────────────────────────────────── */
+    .github-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
       align-items: center;
       justify-content: space-between;
     }
-    .github-badges { display: flex; flex-wrap: wrap; gap: .75rem; }
+    .github-wrap h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: .5rem; }
+    .github-wrap p { font-size: .9rem; color: var(--muted); margin-bottom: 1.25rem; }
+    .badges { display: flex; flex-wrap: wrap; gap: .75rem; }
     .badge {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       padding: .5rem 1rem;
-      font-size: .82rem;
+      font-size: .8rem;
       font-weight: 600;
-      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
     }
-    .badge span { color: var(--accent); margin-right: .3rem; }
+    .badge-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
 
-    /* ── CONTACT ──────────────────────────────────────── */
+    /* ── CONTACT ─────────────────────────────────────────── */
     .contact-section {
       text-align: center;
-      background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(255,153,0,.1) 0%, transparent 70%);
-      padding: 5rem 2rem;
+      padding: 7rem 2rem;
       border-top: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
-    .contact-section h2 { font-size: 2rem; margin-bottom: 1rem; }
-    .contact-section p { color: var(--muted); max-width: 480px; margin: 0 auto 2rem; }
+    .contact-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255,153,0,.08) 0%, transparent 70%);
+    }
+    .contact-section > * { position: relative; }
+    .contact-section h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2.2rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 1rem; }
+    .contact-section p { color: var(--muted); max-width: 460px; margin: 0 auto 2.5rem; line-height: 1.7; }
     .contact-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .contact-sub { font-size: .85rem; color: var(--muted); margin-top: 1.5rem !important; }
 
-    /* ── FOOTER ───────────────────────────────────────── */
+    /* ── FOOTER ──────────────────────────────────────────── */
     footer {
       text-align: center;
       padding: 1.5rem;
@@ -307,12 +544,29 @@
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
 
-    /* ── RESPONSIVE ───────────────────────────────────── */
-    @media (max-width: 640px) {
-      nav ul { gap: .75rem; }
-      .timeline { padding-left: 1.25rem; }
-      .job::before { left: -1.7rem; }
+    /* ── FADE-IN ANIMATION ───────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0 1.25rem; }
+      nav ul { gap: 1rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      .ach-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 2rem; }
+    }
+    @media (max-width: 480px) {
+      nav ul { display: none; }
       .hero-stats { gap: 1.5rem; }
+      .stat-number { font-size: 2rem; }
     }
   </style>
 </head>
@@ -320,407 +574,482 @@
 
 <!-- NAV -->
 <nav>
-  <div class="logo">BS</div>
+  <div class="nav-logo">Basheer <span>Sheriff</span></div>
   <ul>
     <li><a href="#about">About</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#skills">Skills</a></li>
-    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#certifications">Certifications</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
 
 <!-- HERO -->
-<header class="hero" id="about">
-  <div class="hero-badge">&#9733; Open to opportunities &amp; collaboration</div>
-  <h1>Basheer <span>Sheriff</span></h1>
-  <p class="tagline">
-    Senior Solutions Architect at AWS &mdash; 19 years designing scalable cloud, AI, and data
-    architectures that drive measurable business outcomes.
-  </p>
-  <div class="hero-links">
-    <a class="btn btn-primary" href="mailto:mailtobash@yahoo.co.in">&#9993; Get in touch</a>
-    <a class="btn btn-outline" href="https://www.linkedin.com/in/basheersh/" target="_blank" rel="noopener">LinkedIn</a>
-    <a class="btn btn-outline" href="https://github.com/mailtobash" target="_blank" rel="noopener">GitHub</a>
-  </div>
-  <div class="hero-stats">
-    <div class="stat"><div class="stat-number">19+</div><div class="stat-label">Years of Experience</div></div>
-    <div class="stat"><div class="stat-number">8</div><div class="stat-label">AWS Certifications</div></div>
-    <div class="stat"><div class="stat-number">50+</div><div class="stat-label">Developers Impacted</div></div>
-    <div class="stat"><div class="stat-number">$2M+</div><div class="stat-label">Deployments Unblocked</div></div>
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-pill">Senior Solutions Architect &bull; AWS &bull; Melbourne, AU</div>
+    <h1>Basheer<br><em>Sheriff</em></h1>
+    <p class="hero-sub">
+      19+ years designing scalable cloud, AI, and data architectures.
+      Turning complex technical challenges into outcomes that matter.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="mailto:mailtobash@yahoo.co.in">Get in touch</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/basheersh/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href="https://github.com/mailtobash" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-number">19+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">8</div>
+        <div class="stat-label">AWS Certifications</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">50+</div>
+        <div class="stat-label">Developers Impacted</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">+40%</div>
+        <div class="stat-label">YoY Platform Growth</div>
+      </div>
+    </div>
   </div>
 </header>
 
-<!-- SUMMARY -->
-<section>
-  <span class="section-label">Summary</span>
-  <h2>Building what matters, at scale.</h2>
-  <div class="divider"></div>
-  <p style="color:var(--muted);max-width:760px;font-size:1.05rem;line-height:1.8;">
-    Solutions Architect and Principal Engineer with deep expertise in Generative AI, cloud computing, and data engineering.
-    Skilled at translating complex technical requirements into innovative, scalable architectures that drive business growth.
-    A proven leader in mentoring engineering teams, influencing product strategy, and delivering at the intersection of
-    AI, cloud, and enterprise platforms — across Telco, Healthcare, Insurance, Utilities, and Financial Services.
-  </p>
-</section>
+<!-- ABOUT -->
+<div id="about">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="eyebrow">About</div>
+      <h2>Building what matters, <em>at scale.</em></h2>
+    </div>
+    <div class="about-grid reveal">
+      <div class="about-text">
+        Solutions Architect and Principal Engineer with deep expertise in
+        <strong>Generative AI</strong>, cloud computing, and data engineering.
+        Skilled at translating complex technical requirements into innovative,
+        scalable architectures that drive business growth.
+        <br><br>
+        A proven leader in mentoring engineering teams, influencing product strategy,
+        and delivering at the intersection of AI, cloud, and enterprise platforms —
+        across <strong>Telco, Healthcare, Insurance, Utilities</strong>, and Financial Services.
+      </div>
+      <div class="about-card">
+        <div class="about-item">
+          <div class="about-item-icon">📍</div>
+          <div>
+            <div class="about-item-label">Location</div>
+            <div class="about-item-value">Melbourne, Victoria, Australia</div>
+          </div>
+        </div>
+        <div class="about-item">
+          <div class="about-item-icon">🏢</div>
+          <div>
+            <div class="about-item-label">Current Role</div>
+            <div class="about-item-value">Senior Solutions Architect @ AWS</div>
+          </div>
+        </div>
+        <div class="about-item">
+          <div class="about-item-icon">✉️</div>
+          <div>
+            <div class="about-item-label">Email</div>
+            <div class="about-item-value">mailtobash@yahoo.co.in</div>
+          </div>
+        </div>
+        <div class="about-item">
+          <div class="about-item-icon">🎓</div>
+          <div>
+            <div class="about-item-label">Education</div>
+            <div class="about-item-value">B.E. Computer Engineering, Mumbai University</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ACHIEVEMENTS -->
-<section>
-  <span class="section-label">Impact</span>
-  <h2>Key Achievements</h2>
-  <div class="divider"></div>
-  <div class="achievements-grid">
-
-    <div class="achievement-card">
-      <div class="icon">&#129302;</div>
-      <h3>Generative AI Impact</h3>
-      <p>Developed agentic AI solutions improving search and analytics. Created AI tools enhancing architect productivity. Presented at multiple marquee AWS events.</p>
-      <span class="metric">+30% UX &nbsp;|&nbsp; +20% Productivity</span>
+<div>
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="eyebrow">Impact</div>
+      <h2>Key <em>Achievements</em></h2>
     </div>
+    <div class="ach-grid">
 
-    <div class="achievement-card">
-      <div class="icon">&#128200;</div>
-      <h3>Analytics Growth</h3>
-      <p>Architected a scalable MLOps and AI Data Cloud roadmap for a major account, unblocking enterprise deployments and driving product enhancements.</p>
-      <span class="metric">40% YoY Growth &nbsp;|&nbsp; $2M+ Unblocked</span>
+      <div class="ach-card reveal">
+        <div class="ach-icon">🤖</div>
+        <h3>Generative AI Impact</h3>
+        <p>Developed agentic AI solutions improving search and analytics. Built AI tools that enhanced architect productivity and drive innovation. Presented at multiple marquee AWS events.</p>
+        <div class="ach-metric">+30% UX &nbsp;·&nbsp; +20% Productivity</div>
+      </div>
+
+      <div class="ach-card reveal">
+        <div class="ach-icon">📈</div>
+        <h3>Analytics Growth</h3>
+        <p>Architected a scalable MLOps and AI Data Cloud roadmap for a major enterprise account, unblocking critical deployments and driving product enhancements across multiple teams.</p>
+        <div class="ach-metric">40% YoY Platform Growth</div>
+      </div>
+
+      <div class="ach-card reveal">
+        <div class="ach-icon">🎓</div>
+        <h3>Architect Mentorship</h3>
+        <p>Architected a career development roadmap for junior architects, combining 1-on-1 technical coaching with strategic thinking and stakeholder management training.</p>
+        <div class="ach-metric">10+ Architects Mentored</div>
+      </div>
+
+      <div class="ach-card reveal">
+        <div class="ach-icon">⚙️</div>
+        <h3>Platform Implementation</h3>
+        <p>Engineered a standardised developer platform unifying API management and data-delivery pipelines with self-service cloud provisioning and pre-configured security guardrails.</p>
+        <div class="ach-metric">+25% Delivery Velocity &nbsp;·&nbsp; 50+ Devs</div>
+      </div>
+
     </div>
-
-    <div class="achievement-card">
-      <div class="icon">&#127891;</div>
-      <h3>Architect Mentorship</h3>
-      <p>Architected a career development roadmap for junior architects, combining technical coaching with strategic thinking and stakeholder management training.</p>
-      <span class="metric">10+ Architects Mentored</span>
-    </div>
-
-    <div class="achievement-card">
-      <div class="icon">&#9881;&#65039;</div>
-      <h3>Platform Implementation</h3>
-      <p>Engineered a standardised developer platform unifying API management and data-delivery pipelines with self-service cloud provisioning and security guardrails.</p>
-      <span class="metric">+25% Delivery Velocity &nbsp;|&nbsp; 50+ Devs</span>
-    </div>
-
   </div>
-</section>
+</div>
 
 <!-- EXPERIENCE -->
-<section id="experience">
-  <span class="section-label">Career</span>
-  <h2>Experience</h2>
-  <div class="divider"></div>
-  <div class="timeline">
-
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Senior Solutions Architect</div>
-          <div class="job-company">Amazon Web Services (AWS)</div>
-        </div>
-        <div class="job-meta">Apr 2022 &mdash; Present<br>Melbourne, Australia</div>
-      </div>
-      <ul>
-        <li>Build multiple <strong>agentic AI solutions</strong> using Amazon Bedrock for search, chatbot, and Generative AI analytics workloads.</li>
-        <li>Author and present workshops at marquee AWS events demonstrating Generative AI solutions for real customer problems.</li>
-        <li>Advise customers and GSI partners across <strong>National Telco, Healthcare, Insurance, and Utilities</strong> verticals.</li>
-        <li>Collaborate with internal AWS service teams, feeding customer anecdotes and field feedback to shape product strategy.</li>
-        <li>Mentor Solutions Architects on technical craft, career growth, and stakeholder engagement.</li>
-      </ul>
+<div id="experience">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="eyebrow">Career</div>
+      <h2>Work <em>Experience</em></h2>
     </div>
+    <div class="timeline">
 
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Principal Engineer</div>
-          <div class="job-company">Belong (Telstra)</div>
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Senior Solutions Architect</div>
+              <div class="job-company">Amazon Web Services (AWS)</div>
+            </div>
+            <div class="job-meta">Apr 2022 — Present<br>Melbourne, Australia</div>
+          </div>
+          <ul>
+            <li>Build multiple <strong>agentic AI solutions</strong> using Amazon Bedrock for search, chatbot, and Generative AI analytics workloads.</li>
+            <li>Author and present workshops at marquee AWS events demonstrating Generative AI solutions for real customer problems.</li>
+            <li>Advise customers and GSI partners across <strong>National Telco, Healthcare, Insurance, and Utilities</strong> verticals.</li>
+            <li>Collaborate with internal AWS service teams, feeding customer anecdotes and field feedback to shape product strategy.</li>
+            <li>Mentor Solutions Architects on technical craft, career growth, and stakeholder engagement.</li>
+          </ul>
         </div>
-        <div class="job-meta">2018 &mdash; Apr 2022<br>Melbourne, Australia</div>
       </div>
-      <ul>
-        <li>Led engineering teams building <strong>scalable data infrastructure</strong> and backend services for behavioural analytics.</li>
-        <li>Drove design and continuous improvement of event ingestion and processing systems.</li>
-        <li>Set <strong>technical standards, cost management frameworks, and design oversight</strong> across implementation teams.</li>
-        <li>Mentored engineers and fostered a high-performance culture through structured coaching and feedback.</li>
-      </ul>
-    </div>
 
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Senior Technology Architect</div>
-          <div class="job-company">Infosys Australia</div>
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Principal Engineer</div>
+              <div class="job-company">Belong (Telstra)</div>
+            </div>
+            <div class="job-meta">2018 — Apr 2022<br>Melbourne, Australia</div>
+          </div>
+          <ul>
+            <li>Led engineering teams building <strong>scalable data infrastructure</strong> and backend services for behavioural analytics.</li>
+            <li>Drove design and continuous improvement of event ingestion and processing systems.</li>
+            <li>Set <strong>technical standards, cost management frameworks, and design oversight</strong> across implementation teams.</li>
+            <li>Mentored engineers and fostered a high-performance culture through structured coaching and feedback.</li>
+          </ul>
         </div>
-        <div class="job-meta">Aug 2016 &mdash; Apr 2018<br>Melbourne, Australia</div>
       </div>
-      <ul>
-        <li>Led detailed <strong>architectural dialogues</strong> with customers to design and deliver comprehensive integrated solutions.</li>
-        <li>Conducted technical workshops for stakeholders, product, delivery, and operations teams.</li>
-        <li>Designed and implemented <strong>scalable digital platforms</strong> on AWS (ECS, Elastic Beanstalk, CloudFormation, S3, RDS).</li>
-        <li>Articulated solution impacts, risks, and mitigations to executive stakeholders.</li>
-      </ul>
-    </div>
 
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Software Engineering Specialist</div>
-          <div class="job-company">Amdocs Inc</div>
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Senior Technology Architect</div>
+              <div class="job-company">Infosys Australia</div>
+            </div>
+            <div class="job-meta">Aug 2016 — Apr 2018<br>Melbourne, Australia</div>
+          </div>
+          <ul>
+            <li>Led detailed <strong>architectural dialogues</strong> with customers to design and deliver comprehensive integrated solutions.</li>
+            <li>Conducted technical workshops for stakeholders, product, delivery, and operations teams.</li>
+            <li>Designed and implemented <strong>scalable digital platforms</strong> on AWS (ECS, Elastic Beanstalk, CloudFormation, S3, RDS).</li>
+            <li>Articulated solution impacts, risks, and mitigations to executive stakeholders.</li>
+          </ul>
         </div>
-        <div class="job-meta">2015 &mdash; Jul 2016<br>Melbourne, Australia</div>
       </div>
-      <ul>
-        <li>Led a <strong>geo-diverse team of 6 analysts</strong> delivering breakthrough Mobile Financial Services solutions.</li>
-        <li>Applied modern engineering: Agile, Scrum, CI/CD, DevOps, TDD.</li>
-        <li>Ran proof-of-concepts across cloud vendors to inform vendor selection decisions.</li>
-      </ul>
-    </div>
 
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Technology Architect</div>
-          <div class="job-company">Infosys</div>
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Software Engineering Specialist</div>
+              <div class="job-company">Amdocs Inc</div>
+            </div>
+            <div class="job-meta">2015 — Jul 2016<br>Melbourne, Australia</div>
+          </div>
+          <ul>
+            <li>Led a <strong>geo-diverse team of 6 analysts</strong> delivering breakthrough Mobile Financial Services solutions.</li>
+            <li>Applied modern engineering practices: Agile, Scrum, CI/CD, DevOps, TDD.</li>
+            <li>Ran proof-of-concepts across cloud vendors to inform vendor selection decisions.</li>
+          </ul>
         </div>
-        <div class="job-meta">Aug 2014 &mdash; Feb 2015<br>Melbourne, Australia</div>
       </div>
-      <ul>
-        <li>Designed a <strong>CRM platform</strong> to identify revenue leakage and overcharging gaps, improving accuracy by 10%.</li>
-        <li>Developed Proof-of-Concepts for Telstra Revenue Assurance models, driving cost estimation and feasibility analysis.</li>
-      </ul>
-    </div>
 
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Expert / Senior Subject Matter Expert</div>
-          <div class="job-company">Amdocs Inc</div>
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Technology Architect</div>
+              <div class="job-company">Infosys</div>
+            </div>
+            <div class="job-meta">Aug 2014 — Feb 2015<br>Melbourne, Australia</div>
+          </div>
+          <ul>
+            <li>Designed a <strong>CRM platform</strong> to identify revenue leakage and overcharging gaps, improving accuracy by 10%.</li>
+            <li>Developed Proof-of-Concepts for Telstra Revenue Assurance models, driving cost estimation and feasibility analysis.</li>
+          </ul>
         </div>
-        <div class="job-meta">Aug 2009 &mdash; Jun 2014<br>Dallas, TX, USA</div>
       </div>
-      <ul>
-        <li>Designed and developed business interfaces including POJOs, EJBs, and Web Services.</li>
-        <li>Performed code instrumentation and JVM tuning to improve application performance.</li>
-      </ul>
-    </div>
 
-    <div class="job">
-      <div class="job-header">
-        <div>
-          <div class="job-title">Subject Matter Expert</div>
-          <div class="job-company">Amdocs</div>
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Expert / Senior Subject Matter Expert</div>
+              <div class="job-company">Amdocs Inc</div>
+            </div>
+            <div class="job-meta">Aug 2009 — Jun 2014<br>Dallas, TX, USA</div>
+          </div>
+          <ul>
+            <li>Designed and developed business interfaces including POJOs, EJBs, and Web Services.</li>
+            <li>Performed code instrumentation and JVM tuning to improve application performance.</li>
+          </ul>
         </div>
-        <div class="job-meta">Aug 2006 &mdash; Jul 2009<br>Pune, India</div>
       </div>
-      <ul>
-        <li>Increased design efficiency by <strong>20%</strong> by creating detailed program requirements following coding standards.</li>
-        <li>Produced comprehensive test cases covering unit, integrated unit, and sub-system testing phases.</li>
-      </ul>
-    </div>
 
+      <div class="job reveal">
+        <div class="job-dot"></div>
+        <div class="job-inner">
+          <div class="job-header">
+            <div>
+              <div class="job-title">Subject Matter Expert</div>
+              <div class="job-company">Amdocs</div>
+            </div>
+            <div class="job-meta">Aug 2006 — Jul 2009<br>Pune, India</div>
+          </div>
+          <ul>
+            <li>Increased design efficiency by <strong>20%</strong> by creating detailed program requirements following coding standards.</li>
+            <li>Produced comprehensive test cases covering unit, integrated unit, and sub-system testing phases.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
   </div>
-</section>
+</div>
 
 <!-- SKILLS -->
-<section id="skills">
-  <span class="section-label">Expertise</span>
-  <h2>Skills &amp; Technologies</h2>
-  <div class="divider"></div>
-  <div class="skills-layout">
-
-    <div class="skills-group">
-      <h3>Core Disciplines</h3>
-      <div class="tags">
-        <span class="tag">Generative AI</span>
-        <span class="tag">Solution Architecture</span>
-        <span class="tag">Software Engineering</span>
-        <span class="tag">Data Engineering</span>
-        <span class="tag">Cloud Computing</span>
-        <span class="tag">DevOps &amp; CI/CD</span>
-        <span class="tag">MLOps</span>
-        <span class="tag">Infrastructure as Code</span>
+<div id="skills">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="eyebrow">Expertise</div>
+      <h2>Skills &amp; <em>Technologies</em></h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Core Disciplines</div>
+        <div class="tags">
+          <span class="tag">Generative AI</span>
+          <span class="tag">Solution Architecture</span>
+          <span class="tag">Software Engineering</span>
+          <span class="tag">Data Engineering</span>
+          <span class="tag">Cloud Computing</span>
+          <span class="tag">DevOps &amp; CI/CD</span>
+          <span class="tag">MLOps</span>
+          <span class="tag">Infrastructure as Code</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Cloud &amp; Infrastructure</div>
+        <div class="tags">
+          <span class="tag">Amazon Bedrock</span>
+          <span class="tag">AWS Lambda</span>
+          <span class="tag">CloudFormation</span>
+          <span class="tag">ECS / Kubernetes</span>
+          <span class="tag">API Gateways</span>
+          <span class="tag">Serverless</span>
+          <span class="tag">Containers</span>
+          <span class="tag">S3 / RDS / DynamoDB</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Data &amp; AI</div>
+        <div class="tags">
+          <span class="tag">Bedrock Agent Core</span>
+          <span class="tag">Strands SDK</span>
+          <span class="tag">OpenSearch</span>
+          <span class="tag">Redshift</span>
+          <span class="tag">Spark</span>
+          <span class="tag">dbt</span>
+          <span class="tag">Splunk</span>
+          <span class="tag">ETL / Data Lake</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Languages &amp; Tools</div>
+        <div class="tags">
+          <span class="tag">Python</span>
+          <span class="tag">NodeJS</span>
+          <span class="tag">SQL</span>
+          <span class="tag">Java</span>
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">New Relic</span>
+          <span class="tag">Dynatrace</span>
+          <span class="tag">Git</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Industry Verticals</div>
+        <div class="tags">
+          <span class="tag">Telco</span>
+          <span class="tag">Healthcare</span>
+          <span class="tag">Utilities</span>
+          <span class="tag">Public Sector</span>
+          <span class="tag">Financial Services</span>
+          <span class="tag">Insurance</span>
+        </div>
       </div>
     </div>
-
-    <div class="skills-group">
-      <h3>Cloud &amp; Infrastructure</h3>
-      <div class="tags">
-        <span class="tag">Amazon Bedrock</span>
-        <span class="tag">AWS Lambda</span>
-        <span class="tag">CloudFormation</span>
-        <span class="tag">ECS / Kubernetes</span>
-        <span class="tag">API Gateways</span>
-        <span class="tag">Serverless</span>
-        <span class="tag">Containers</span>
-        <span class="tag">S3 / RDS / DynamoDB</span>
-      </div>
-    </div>
-
-    <div class="skills-group">
-      <h3>Data &amp; AI</h3>
-      <div class="tags">
-        <span class="tag">Bedrock Agent Core</span>
-        <span class="tag">Strands SDK</span>
-        <span class="tag">OpenSearch</span>
-        <span class="tag">Redshift</span>
-        <span class="tag">Spark</span>
-        <span class="tag">dbt</span>
-        <span class="tag">Splunk</span>
-        <span class="tag">ETL / Data Lake</span>
-      </div>
-    </div>
-
-    <div class="skills-group">
-      <h3>Languages &amp; Tools</h3>
-      <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag">NodeJS</span>
-        <span class="tag">SQL</span>
-        <span class="tag">Java</span>
-        <span class="tag">GitHub Actions</span>
-        <span class="tag">New Relic</span>
-        <span class="tag">Dynatrace</span>
-        <span class="tag">Git</span>
-      </div>
-    </div>
-
-    <div class="skills-group">
-      <h3>Industry Verticals</h3>
-      <div class="tags">
-        <span class="tag">Telco</span>
-        <span class="tag">Healthcare</span>
-        <span class="tag">Utilities</span>
-        <span class="tag">Public Sector</span>
-        <span class="tag">Financial Services</span>
-        <span class="tag">Insurance</span>
-      </div>
-    </div>
-
   </div>
-</section>
+</div>
 
 <!-- CERTIFICATIONS -->
-<section id="certifications">
-  <span class="section-label">Credentials</span>
-  <h2>Certifications</h2>
-  <div class="divider"></div>
-  <div class="certs-grid">
-
-    <div class="cert-card">
-      <div class="cert-icon">&#9729;&#65039;</div>
-      <div>
-        <div class="cert-name">AWS Certified Solutions Architect – Professional</div>
-        <div class="cert-issuer">Amazon Web Services</div>
-      </div>
+<div id="certifications">
+  <div class="section-wrap">
+    <div class="section-header reveal">
+      <div class="eyebrow">Certifications</div>
+      <h2>Certifications &amp; <em>Credentials</em></h2>
     </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#9729;&#65039;</div>
-      <div>
-        <div class="cert-name">AWS Certified Machine Learning Specialty</div>
-        <div class="cert-issuer">Amazon Web Services</div>
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">☁️</div>
+        <div>
+          <div class="cert-name">AWS Certified Solutions Architect – Professional</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
       </div>
-    </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#9729;&#65039;</div>
-      <div>
-        <div class="cert-name">AWS Certified Data Analytics Specialty</div>
-        <div class="cert-issuer">Amazon Web Services</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">🤖</div>
+        <div>
+          <div class="cert-name">AWS Certified Machine Learning Specialty</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
       </div>
-    </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#9729;&#65039;</div>
-      <div>
-        <div class="cert-name">AWS Certified Data Specialty</div>
-        <div class="cert-issuer">Amazon Web Services</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">📊</div>
+        <div>
+          <div class="cert-name">AWS Certified Data Analytics Specialty</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
       </div>
-    </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#9729;&#65039;</div>
-      <div>
-        <div class="cert-name">AWS Certified Security Specialty</div>
-        <div class="cert-issuer">Amazon Web Services</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">🗄️</div>
+        <div>
+          <div class="cert-name">AWS Certified Data Specialty</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
       </div>
-    </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#128202;</div>
-      <div>
-        <div class="cert-name">Certified Data Vault Modeler</div>
-        <div class="cert-issuer">Genesee Academy</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">🔒</div>
+        <div>
+          <div class="cert-name">AWS Certified Security Specialty</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
       </div>
-    </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#128187;</div>
-      <div>
-        <div class="cert-name">Architecting Microsoft Azure Solutions</div>
-        <div class="cert-issuer">Microsoft</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">🏛️</div>
+        <div>
+          <div class="cert-name">Certified Data Vault Modeler</div>
+          <div class="cert-issuer">Genesee Academy</div>
+        </div>
       </div>
-    </div>
-
-    <div class="cert-card">
-      <div class="cert-icon">&#127959;&#65039;</div>
-      <div>
-        <div class="cert-name">TOGAF 9</div>
-        <div class="cert-issuer">The Open Group</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">☁️</div>
+        <div>
+          <div class="cert-name">Architecting Microsoft Azure Solutions</div>
+          <div class="cert-issuer">Microsoft</div>
+        </div>
       </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- EDUCATION -->
-<section>
-  <span class="section-label">Education</span>
-  <h2>Academic Background</h2>
-  <div class="divider"></div>
-  <div class="edu-card">
-    <div class="edu-icon">&#127979;</div>
-    <div>
-      <div class="edu-degree">Bachelor of Engineering &mdash; Computer Engineering</div>
-      <div class="edu-school">Mumbai University</div>
-      <div class="edu-meta">2002 &ndash; 2006 &nbsp;&bull;&nbsp; Mumbai, India</div>
+      <div class="cert-card reveal">
+        <div class="cert-icon-wrap">🏗️</div>
+        <div>
+          <div class="cert-name">TOGAF 9</div>
+          <div class="cert-issuer">The Open Group</div>
+        </div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- GITHUB -->
-<section>
-  <span class="section-label">Open Source</span>
-  <h2>GitHub Activity</h2>
-  <div class="divider"></div>
-  <div class="github-section">
-    <div>
-      <p style="color:var(--muted);margin-bottom:1rem;">Active contributor with multiple GitHub achievement badges earned through collaboration and open-source contributions.</p>
-      <a class="btn btn-outline" href="https://github.com/mailtobash" target="_blank" rel="noopener">&#128279; View GitHub Profile</a>
-    </div>
-    <div class="github-badges">
-      <div class="badge"><span>&#127941;</span> Pull Shark &times;2</div>
-      <div class="badge"><span>&#127941;</span> Pair Extraordinaire</div>
-      <div class="badge"><span>&#127941;</span> YOLO</div>
-      <div class="badge"><span>&#10052;</span> Arctic Code Vault Contributor</div>
+<div>
+  <div class="section-wrap">
+    <div class="reveal">
+      <div class="section-header">
+        <div class="eyebrow">Open Source</div>
+        <h2>GitHub <em>Activity</em></h2>
+      </div>
+      <div class="github-wrap">
+        <div>
+          <h3>github.com/mailtobash</h3>
+          <p>Active contributor with multiple GitHub achievement badges earned through collaboration and open-source contributions.</p>
+          <a class="btn btn-ghost" href="https://github.com/mailtobash" target="_blank" rel="noopener">View Profile →</a>
+        </div>
+        <div class="badges">
+          <div class="badge"><div class="badge-dot"></div>Pull Shark ×2</div>
+          <div class="badge"><div class="badge-dot"></div>Pair Extraordinaire</div>
+          <div class="badge"><div class="badge-dot"></div>YOLO</div>
+          <div class="badge"><div class="badge-dot"></div>Arctic Code Vault Contributor</div>
+        </div>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- CONTACT -->
 <div class="contact-section" id="contact">
-  <p class="section-label">Contact</p>
-  <h2>Let&rsquo;s Connect</h2>
-  <p>Whether you&rsquo;re looking to collaborate on cloud architecture, Generative AI, or data engineering — I&rsquo;d love to hear from you.</p>
+  <p class="eyebrow" style="justify-content:center">Contact</p>
+  <h2>Let's <em style="color:var(--accent)">Connect</em></h2>
+  <p>Whether you're looking to collaborate on cloud architecture, Generative AI, or data engineering — I'd love to hear from you.</p>
   <div class="contact-links">
-    <a class="btn btn-primary" href="mailto:mailtobash@yahoo.co.in">&#9993; mailtobash@yahoo.co.in</a>
-    <a class="btn btn-outline" href="https://www.linkedin.com/in/basheersh/" target="_blank" rel="noopener">LinkedIn</a>
-    <a class="btn btn-outline" href="https://github.com/mailtobash" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn btn-primary" href="mailto:mailtobash@yahoo.co.in">✉ mailtobash@yahoo.co.in</a>
+    <a class="btn btn-ghost" href="https://www.linkedin.com/in/basheersh/" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="btn btn-ghost" href="https://github.com/mailtobash" target="_blank" rel="noopener">GitHub</a>
   </div>
-  <p style="color:var(--muted);margin-top:1.5rem;font-size:.85rem;">&#128205; Melbourne, Victoria, Australia</p>
+  <p class="contact-sub">📍 Melbourne, Victoria, Australia</p>
 </div>
 
 <footer>
-  &copy; 2026 Basheer Sheriff &nbsp;&bull;&nbsp;
+  &copy; 2026 Basheer Sheriff &nbsp;·&nbsp;
   <a href="https://github.com/mailtobash" target="_blank" rel="noopener">github.com/mailtobash</a>
 </footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transitionDelay = `${(i % 4) * 80}ms`;
+    observer.observe(el);
+  });
+</script>
 
 </body>
 </html>
